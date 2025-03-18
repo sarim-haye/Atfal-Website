@@ -1,0 +1,165 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Manage{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>Teams
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="add-team-form" class="mb-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="name" placeholder="Enter team name" required>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add Team
+                        </button>
+                    </div>
+                </form>
+                <div class="list-group">
+                    {% for team in teams %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center" data-team-id="{{ team.id }}">
+                        <div>
+                            <i class="fas fa-users me-2"></i>{{ team.name }}
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger delete-team">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tasks me-2"></i>Activities
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="add-activity-form" class="mb-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="name" placeholder="Enter activity name" required>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add Activity
+                        </button>
+                    </div>
+                </form>
+                <div class="list-group">
+                    {% for activity in activities %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center" data-activity-id="{{ activity.id }}">
+                        <div>
+                            <i class="fas fa-tasks me-2"></i>{{ activity.name }}
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger delete-activity">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Handle team form submission
+    $('#add-team-form').submit(function(e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+        
+        $.ajax({
+            url: '/api/team',
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('Error adding team: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('Error adding team. Please try again.');
+            }
+        });
+    });
+
+    // Handle activity form submission
+    $('#add-activity-form').submit(function(e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+        
+        $.ajax({
+            url: '/api/activity',
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('Error adding activity: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('Error adding activity. Please try again.');
+            }
+        });
+    });
+
+    // Handle team deletion
+    $('.delete-team').click(function() {
+        if (confirm('Are you sure you want to delete this team? This will also delete all points associated with this team.')) {
+            const teamId = $(this).closest('.list-group-item').data('team-id');
+            
+            $.ajax({
+                url: `/api/team/${teamId}`,
+                method: 'DELETE',
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert('Error deleting team: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Error deleting team. Please try again.');
+                }
+            });
+        }
+    });
+
+    // Handle activity deletion
+    $('.delete-activity').click(function() {
+        if (confirm('Are you sure you want to delete this activity? This will also delete all points associated with this activity.')) {
+            const activityId = $(this).closest('.list-group-item').data('activity-id');
+            
+            $.ajax({
+                url: `/api/activity/${activityId}`,
+                method: 'DELETE',
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert('Error deleting activity: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Error deleting activity. Please try again.');
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %} 

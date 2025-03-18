@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Table
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 # from sqlalchemy import Column, Integer, String
 # from app import db
@@ -10,6 +10,40 @@ db_session = scoped_session(sessionmaker(autocommit=False,
                                          bind=engine))
 Base = declarative_base()
 Base.query = db_session.query_property()
+
+class Team(Base):
+    __tablename__ = 'teams'
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), unique=True, nullable=False)
+    points = relationship("Points", back_populates="team")
+
+    def __repr__(self):
+        return f'<Team {self.name}>'
+
+class Activity(Base):
+    __tablename__ = 'activities'
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), unique=True, nullable=False)
+    points = relationship("Points", back_populates="activity")
+
+    def __repr__(self):
+        return f'<Activity {self.name}>'
+
+class Points(Base):
+    __tablename__ = 'points'
+    
+    id = Column(Integer, primary_key=True)
+    team_id = Column(Integer, ForeignKey('teams.id'), nullable=False)
+    activity_id = Column(Integer, ForeignKey('activities.id'), nullable=False)
+    points = Column(Integer, default=0)
+    
+    team = relationship("Team", back_populates="points")
+    activity = relationship("Activity", back_populates="points")
+
+    def __repr__(self):
+        return f'<Points {self.points}>'
 
 # Set your classes here.
 

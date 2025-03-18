@@ -1,0 +1,107 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-table me-2"></i>Points Table
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        {% for team in teams %}
+                        <th>{{ team.name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in activities %}
+                    <tr>
+                        <td class="fw-bold">{{ activity.name }}</td>
+                        {% for team in teams %}
+                        <td class="points-cell text-center" 
+                            data-team-id="{{ team.id }}"
+                            data-activity-id="{{ activity.id }}"
+                            data-current-points="{{ points_data[team.name][activity.name] }}">
+                            <span class="points-value">{{ points_data[team.name][activity.name] }}</span>
+                            <div class="btn-group btn-group-sm d-none">
+                                <button class="btn btn-outline-primary increment-points">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="btn btn-outline-danger decrement-points">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Show increment/decrement buttons on hover
+    $('.points-cell').hover(
+        function() {
+            $(this).find('.points-value').addClass('d-none');
+            $(this).find('.btn-group').removeClass('d-none');
+        },
+        function() {
+            $(this).find('.points-value').removeClass('d-none');
+            $(this).find('.btn-group').addClass('d-none');
+        }
+    );
+
+    // Handle increment/decrement clicks
+    $('.increment-points').click(function() {
+        const cell = $(this).closest('.points-cell');
+        const currentPoints = parseInt(cell.data('current-points'));
+        updatePoints(cell, currentPoints + 1);
+    });
+
+    $('.decrement-points').click(function() {
+        const cell = $(this).closest('.points-cell');
+        const currentPoints = parseInt(cell.data('current-points'));
+        updatePoints(cell, currentPoints - 1);
+    });
+
+    function updatePoints(cell, newPoints) {
+        const teamId = cell.data('team-id');
+        const activityId = cell.data('activity-id');
+
+        $.ajax({
+            url: '/api/points',
+            method: 'POST',
+            data: {
+                team_id: teamId,
+                activity_id: activityId,
+                points: newPoints
+            },
+            success: function(response) {
+                if (response.success) {
+                    cell.data('current-points', newPoints);
+                    cell.find('.points-value').text(newPoints);
+                } else {
+                    alert('Error updating points: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('Error updating points. Please try again.');
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 
