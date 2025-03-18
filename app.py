@@ -16,6 +16,11 @@ from models import Team, Activity, Points, db_session
 
 app = Flask(__name__)
 app.config.from_object('config')
+
+# Update database URL for Vercel
+if os.environ.get('VERCEL_ENV') == 'production':
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+
 db = SQLAlchemy(app)
 
 #----------------------------------------------------------------------------#
@@ -146,7 +151,8 @@ def internal_error(error):
 def not_found_error(error):
     return render_template('errors/404.html'), 404
 
-if not app.debug:
+# Remove file logging for Vercel
+if not app.debug and not os.environ.get('VERCEL_ENV'):
     file_handler = FileHandler('error.log')
     file_handler.setFormatter(
         Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
@@ -160,7 +166,7 @@ if not app.debug:
 # Launch.
 #----------------------------------------------------------------------------#
 
-# Default port:
+# This is for local development
 if __name__ == '__main__':
     app.run()
 
