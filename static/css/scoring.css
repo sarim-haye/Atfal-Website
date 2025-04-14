@@ -1,0 +1,166 @@
+.scoring-container {
+    max-width: 100%;
+    padding: 1rem;
+    background: #fff;
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.back-button {
+    color: #666;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background: #f8f9fa;
+}
+
+.back-button:hover {
+    background: #e9ecef;
+}
+
+.last-saved {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.spreadsheet {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.scoring-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.scoring-table th {
+    background: #34495e;
+    color: white;
+    font-weight: 500;
+    text-align: center;
+    padding: 0.75rem;
+    border: 1px solid #2c3e50;
+}
+
+.scoring-table td {
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.team-col {
+    min-width: 200px;
+    text-align: left !important;
+}
+
+.activity-col {
+    min-width: 80px;
+}
+
+.total-col {
+    min-width: 100px;
+    background: #2c3e50 !important;
+}
+
+.team-name {
+    text-align: left !important;
+    font-weight: 500;
+    color: #2c3e50;
+    padding-left: 1rem !important;
+}
+
+.score-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+.score-input:focus {
+    outline: none;
+    background: #e3f2fd;
+}
+
+.score-input::-webkit-inner-spin-button,
+.score-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.total {
+    font-weight: 600;
+    color: #2c3e50;
+    background: #f8f9fa;
+}
+
+.actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.save-button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.save-button:hover {
+    background: #2980b9;
+}
+
+/* Alternating row colors */
+.scoring-table tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+/* Hover effect for rows */
+.scoring-table tbody tr:hover {
+    background: #e9ecef;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .scoring-container {
+        padding: 0.5rem;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .scoring-table th,
+    .scoring-table td {
+        padding: 0.5rem;
+    }
+} 

@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Leaderboard{% endblock %}
+
+{% block styles %}
+<style>
+:root {
+    --dark-blue: #0a1628;
+    --light-blue: #00d4ff;
+    --white: #ffffff;
+    --background: #060d1b;
+    --card-bg: #0f1b31;
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --error: #ef4444;
+    --success: #22c55e;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--background);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-right {
+    display: flex;
+    gap: 12px;
+}
+
+.title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.nav-btn {
+    background: var(--light-blue);
+    color: var(--dark-blue);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.nav-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+}
+
+.nav-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    color: var(--white);
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.league-selector {
+    display: flex;
+    gap: 12px;
+    margin: 30px 0;
+}
+
+.league-btn {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.league-btn.active {
+    background: var(--light-blue);
+    color: var(--dark-blue);
+    border-color: transparent;
+}
+
+.league-btn:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.flash-messages {
+    margin-bottom: 20px;
+}
+
+.flash-message {
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.flash-message.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+}
+
+.flash-message.success {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--success);
+}
+
+.teams-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    margin-top: 20px;
+}
+
+.teams-table th {
+    text-align: left;
+    color: var(--text-secondary);
+    font-weight: 600;
+    padding: 12px 20px;
+    font-size: 14px;
+}
+
+.teams-table td {
+    background: var(--card-bg);
+    padding: 16px 20px;
+    color: var(--text-primary);
+}
+
+.teams-table tr td:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.teams-table tr td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.score-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 12px;
+    border-radius: 4px;
+    color: var(--text-primary);
+    width: 80px;
+    text-align: center;
+}
+
+.score-input:focus {
+    outline: none;
+    border-color: var(--light-blue);
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.action-btn.save {
+    background: var(--light-blue);
+    color: var(--dark-blue);
+}
+
+.action-btn.reduce {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+}
+
+.action-btn.delete {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--error);
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+}
+
+.add-team-form {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.add-team-form input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 4px;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.add-team-form input:focus {
+    outline: none;
+    border-color: var(--light-blue);
+}
+
+.add-team-form button {
+    background: var(--light-blue);
+    color: var(--dark-blue);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <button onclick="window.location.href='/leaderboard'" class="back-btn">←</button>
+            <h1 class="title">Admin Leaderboard</h1>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="league-selector">
+        {% for league in leagues %}
+        <a href="{{ url_for('admin_leaderboard', league_id=league.id) }}" 
+           class="league-btn {% if league.id == selected_league %}active{% endif %}">
+            {{ league.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <form action="{{ url_for('admin_add_team') }}" method="POST" class="add-team-form">
+        <input type="hidden" name="league_id" value="{{ selected_league }}">
+        <input type="text" name="team_name" placeholder="Enter team name" required>
+        <button type="submit">Add Team</button>
+    </form>
+
+    <table class="teams-table">
+        <thead>
+            <tr>
+                <th>Team Name</th>
+                <th>Academic Points</th>
+                <th>Sports Points</th>
+                <th>Extra Points</th>
+                <th>Total Points</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in teams %}
+            <tr>
+                <form action="{{ url_for('admin_update_team_scores', team_id=team.id) }}" method="POST">
+                    <td>{{ team.name }}</td>
+                    <td>
+                        <input type="number" name="academic_points" value="{{ "%.1f"|format(team.academic_points or 0) }}" 
+                               class="score-input" step="0.1" min="0" max="100">
+                    </td>
+                    <td>
+                        <input type="number" name="sports_points" value="{{ "%.1f"|format(team.sports_points or 0) }}" 
+                               class="score-input" step="0.1" min="0" max="100">
+                    </td>
+                    <td>
+                        <input type="number" name="extra_points" value="{{ "%.1f"|format(team.extra_points or 0) }}" 
+                               class="score-input" step="0.1" min="0" max="100">
+                    </td>
+                    <td>{{ "%.1f"|format(team.total_points or 0) }}</td>
+                    <td>
+                        <button type="submit" class="action-btn save">Save</button>
+                        <button type="submit" name="action" value="reduce" class="action-btn reduce">Reduce</button>
+                        <button type="submit" name="action" value="delete" class="action-btn delete"
+                                onclick="return confirm('Are you sure you want to delete this team?')">Delete</button>
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.querySelectorAll('.score-input').forEach(input => {
+    input.addEventListener('input', function() {
+        let value = parseFloat(this.value);
+        if (value > 100) this.value = 100;
+        if (value < 0) this.value = 0;
+    });
+});
+</script>
+{% endblock %} 

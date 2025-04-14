@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category|title }} Scoring{% endblock %}
+
+{% block styles %}
+<style>
+:root {
+    --dark-green: #1a2b33;
+    --light-text: #ffffff;
+    --grid-line: rgba(255, 255, 255, 0.2);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--dark-green);
+    font-family: system-ui, -apple-system, sans-serif;
+    color: var(--light-text);
+    min-height: 100vh;
+}
+
+.scoring-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--grid-line);
+    margin: 20px;
+    border: 1px solid var(--grid-line);
+}
+
+.header-cell {
+    background: var(--dark-green);
+    padding: 16px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 18px;
+    border: 1px solid var(--grid-line);
+}
+
+.grid-cell {
+    background: var(--dark-green);
+    padding: 8px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--grid-line);
+}
+
+.team-cell {
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.score-input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: 1px solid var(--grid-line);
+    border-radius: 4px;
+    color: white;
+    font-size: 16px;
+    padding: 8px;
+    text-align: center;
+}
+
+.score-input:focus {
+    outline: none;
+    border-color: white;
+}
+
+.total-cell {
+    justify-content: center;
+    font-size: 16px;
+}
+
+.back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.save-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.last-saved {
+    position: fixed;
+    bottom: 25px;
+    right: 140px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="root"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+window.INITIAL_DATA = {
+    teams: {{ teams|tojson|safe }},
+    competitions: {{ competitions|tojson|safe }},
+    category: {{ category|tojson|safe }}
+};
+</script>
+
+<script type="text/babel">
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+const ScoringApp = () => {
+    const { teams, competitions, category } = window.INITIAL_DATA;
+    const [scores, setScores] = React.useState(Array(teams.length).fill().map(() => Array(competitions.length).fill('')));
+    const [lastSaved, setLastSaved] = React.useState('Never');
+
+    const handleScoreChange = (row, col, value) => {
+        let numValue = parseFloat(value);
+        if (isNaN(numValue)) numValue = '';
+        if (numValue > 100) numValue = 100;
+        if (numValue < 0) numValue = 0;
+        
+        const newScores = [...scores];
+        newScores[row][col] = numValue;
+        setScores(newScores);
+    };
+
+    const calculateTotal = (row) => {
+        return scores[row]
+            .map(score => parseFloat(score) || 0)
+            .reduce((a, b) => a + b, 0)
+            .toFixed(1);
+    };
+
+    const handleSave = async () => {
+        try {
+            const scoreData = [];
+            scores.forEach((teamScores, teamIndex) => {
+                teamScores.forEach((score, compIndex) => {
+                    if (score !== '') {
+                        scoreData.push({
+                            team_id: teams[teamIndex].id,
+                            competition_id: competitions[compIndex].id,
+                            points: parseFloat(score)
+                        });
+                    }
+                });
+            });
+
+            const response = await fetch('/judge/save-scores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(scoreData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save scores');
+            }
+
+            setLastSaved(new Date().toLocaleTimeString('en-US', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            }));
+        } catch (error) {
+            console.error('Error saving scores:', error);
+        }
+    };
+
+    return (
+        <>
+            <button className="back-button" onClick={() => window.location.href = '/judge/categories'}>
+                ←
+            </button>
+            
+            <div className="scoring-container">
+                {/* Headers */}
+                <div className="header-cell"></div>
+                {competitions.map(comp => (
+                    <div key={comp.id} className="header-cell">{comp.name}</div>
+                ))}
+                <div className="header-cell">TOTAL</div>
+                
+                {/* Grid */}
+                {teams.map((team, i) => (
+                    <React.Fragment key={team.id}>
+                        <div className="grid-cell team-cell">{team.name}</div>
+                        {competitions.map((comp, j) => (
+                            <div key={comp.id} className="grid-cell">
+                                <input
+                                    type="number"
+                                    className="score-input"
+                                    value={scores[i][j]}
+                                    onChange={(e) => handleScoreChange(i, j, e.target.value)}
+                                    min="0"
+                                    max="100"
+                                    step="0.1"
+                                />
+                            </div>
+                        ))}
+                        <div className="grid-cell total-cell">
+                            {calculateTotal(i)}
+                        </div>
+                    </React.Fragment>
+                ))}
+            </div>
+
+            <span className="last-saved">Last saved: {lastSaved}</span>
+            <button className="save-button" onClick={handleSave}>
+                SAVE SCORES ↓
+            </button>
+        </>
+    );
+};
+
+try {
+    root.render(<ScoringApp />);
+} catch (error) {
+    console.error('Render error:', error);
+    document.getElementById('root').innerHTML = 'Error loading application. Please check console.';
+}
+</script>
+{% endblock %} 

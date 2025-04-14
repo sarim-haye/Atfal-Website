@@ -1,0 +1,623 @@
+{% extends "base.html" %}
+
+{% block title %}Live Leaderboard{% endblock %}
+
+{% block styles %}
+<style>
+:root {
+    --dark-blue: #0a1628;
+    --light-blue: #00d4ff;
+    --white: #ffffff;
+    --gold: #ffd700;
+    --silver: #e2e8f0;
+    --bronze: #ff8c42;
+    --background: #060d1b;
+    --card-bg: #0f1b31;
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --gradient-start: #0a1628;
+    --gradient-end: #1a365d;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--background);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    color: var(--white);
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.admin-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.admin-btn:hover {
+    background: var(--light-blue);
+    color: var(--dark-blue);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 201, 240, 0.3);
+}
+
+.leaderboard-wrapper {
+    position: relative;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    background: radial-gradient(circle at top right, var(--gradient-end), var(--gradient-start));
+}
+
+.leaderboard-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.leaderboard-slide.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.leaderboard-slide.exit {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.league-header {
+    display: flex;
+    align-items: center;
+    padding: 0 40px 20px 40px;
+    position: relative;
+}
+
+.league-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 40px;
+    right: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--light-blue), transparent);
+    box-shadow: 0 0 20px var(--light-blue);
+}
+
+.league-title {
+    font-size: 52px;
+    font-weight: 800;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    color: var(--white);
+    text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+}
+
+.league-number {
+    color: var(--light-blue);
+    font-style: italic;
+    position: relative;
+}
+
+.league-number::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--light-blue);
+    box-shadow: 0 0 10px var(--light-blue);
+}
+
+.teams-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 40px;
+    gap: 40px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.team-row {
+    display: grid;
+    grid-template-columns: 45px auto 70px 70px 70px 80px;
+    gap: 8px;
+    padding: 12px 20px;
+    align-items: center;
+    background: var(--card-bg);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    animation: slideIn 0.5s ease-out forwards;
+    animation-delay: calc(var(--index) * 0.1s);
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.team-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.team-row:hover::before {
+    opacity: 1;
+}
+
+.medal-1 {
+    background: linear-gradient(90deg, var(--gold) -100%, var(--card-bg) 50%);
+    border: 1px solid var(--gold);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.medal-2 {
+    background: linear-gradient(90deg, var(--silver) -100%, var(--card-bg) 50%);
+    border: 1px solid var(--silver);
+    box-shadow: 0 0 20px rgba(226, 232, 240, 0.2);
+}
+
+.medal-3 {
+    background: linear-gradient(90deg, var(--bronze) -100%, var(--card-bg) 50%);
+    border: 1px solid var(--bronze);
+    box-shadow: 0 0 20px rgba(255, 140, 66, 0.2);
+}
+
+.header-row {
+    display: grid;
+    grid-template-columns: 45px auto 70px 70px 70px 80px;
+    gap: 8px;
+    padding: 12px 20px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.position-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.medal-1 .position-badge {
+    background: rgba(255, 215, 0, 0.2);
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+.medal-2 .position-badge {
+    background: rgba(226, 232, 240, 0.2);
+    color: var(--silver);
+    border-color: var(--silver);
+}
+
+.medal-3 .position-badge {
+    background: rgba(255, 140, 66, 0.2);
+    color: var(--bronze);
+    border-color: var(--bronze);
+}
+
+.team-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.score {
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--text-secondary);
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.total-points {
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--light-blue);
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.score-change {
+    animation: scorePulse 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes scorePulse {
+    0% {
+        transform: scale(1);
+        background: rgba(0, 212, 255, 0.2);
+    }
+    50% {
+        transform: scale(1.05);
+        background: rgba(0, 212, 255, 0.3);
+    }
+    100% {
+        transform: scale(1);
+        background: transparent;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-message {
+    color: var(--white);
+    text-align: center;
+    padding: 20px;
+    background: rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+    margin: 20px;
+    backdrop-filter: blur(10px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<button onclick="window.location.href='/judge/categories'" class="back-btn">←</button>
+<button onclick="window.location.href='/admin/teams'" class="admin-btn">Admin</button>
+
+<div id="leaderboard">
+    <div id="root"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Add Lodash for debounce -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+<script>
+const INITIAL_DATA = {{ {'teams': teams, 'leagues': leagues} | tojson | safe }};
+</script>
+
+{% raw %}
+<script type="text/babel">
+const ScoreHeader = ({ label, title }) => (
+    <div className="score-header">
+        <span className="score-label">{label}</span>
+        <span className="score-title">{title}</span>
+    </div>
+);
+
+const LeaderboardApp = () => {
+    const [currentLeague, setCurrentLeague] = React.useState(0);
+    const [leaderboardData, setLeaderboardData] = React.useState(INITIAL_DATA.teams || []);
+    const [isTransitioning, setIsTransitioning] = React.useState(false);
+    const [error, setError] = React.useState(null);
+    const previousScoresRef = React.useRef({});
+    
+    // Handle data updates with precise score comparison
+    const handleDataUpdate = React.useCallback((newData) => {
+        try {
+            if (!Array.isArray(newData)) {
+                console.error('Invalid data format:', newData);
+                return;
+            }
+
+            setLeaderboardData(prevData => {
+                const updatedData = newData.map(team => {
+                    const prevTeam = previousScoresRef.current[team.id];
+                    const hasChanged = prevTeam && (
+                        prevTeam.academic !== team.academic_points ||
+                        prevTeam.sports !== team.sports_points ||
+                        prevTeam.extra !== team.extra_points ||
+                        prevTeam.total !== team.total_points
+                    );
+
+                    // Update previous scores for next comparison
+                    previousScoresRef.current[team.id] = {
+                        academic: team.academic_points,
+                        sports: team.sports_points,
+                        extra: team.extra_points,
+                        total: team.total_points
+                    };
+
+                    return {
+                        ...team,
+                        _changed: hasChanged ? {
+                            academic: prevTeam?.academic !== team.academic_points,
+                            sports: prevTeam?.sports !== team.sports_points,
+                            extra: prevTeam?.extra !== team.extra_points,
+                            total: prevTeam?.total !== team.total_points
+                        } : null
+                    };
+                });
+                return updatedData;
+            });
+            
+            setError(null);
+        } catch (err) {
+            console.error('Error updating data:', err);
+            setError('Error updating leaderboard');
+        }
+    }, []);
+
+    // Debounced update function with increased delay
+    const debouncedUpdate = React.useCallback(
+        _.debounce(handleDataUpdate, 2000), // Increased to 2 seconds
+        [handleDataUpdate]
+    );
+
+    // Initialize previous scores on mount
+    React.useEffect(() => {
+        leaderboardData.forEach(team => {
+            if (team && team.id) {
+                previousScoresRef.current[team.id] = {
+                    academic: team.academic_points,
+                    sports: team.sports_points,
+                    extra: team.extra_points,
+                    total: team.total_points
+                };
+            }
+        });
+    }, []);
+
+    // Get leagues that have teams
+    const activeLeagues = React.useMemo(() => {
+        if (!leaderboardData || !INITIAL_DATA.leagues) return [];
+        
+        const leagueTeams = {};
+        leaderboardData.forEach(team => {
+            if (team && team.league_id) {
+                leagueTeams[team.league_id] = true;
+            }
+        });
+        // Add a virtual "All Leagues" option
+        return [{ id: 'all', name: 'All Leagues' }, ...INITIAL_DATA.leagues.filter(league => leagueTeams[league.id])];
+    }, [leaderboardData]);
+
+    // Auto-cycle through leagues every 15 seconds
+    React.useEffect(() => {
+        if (activeLeagues.length <= 1) return;
+
+        const cycleLeague = () => {
+            setIsTransitioning(true);
+            setTimeout(() => {
+                setCurrentLeague(prev => (prev + 1) % activeLeagues.length);
+                setIsTransitioning(false);
+            }, 800);
+        };
+
+        const interval = setInterval(cycleLeague, 15000);
+        return () => clearInterval(interval);
+    }, [activeLeagues.length]);
+
+    // Listen for SSE updates
+    React.useEffect(() => {
+        let eventSource;
+        try {
+            eventSource = new EventSource('/leaderboard/stream');
+            
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    debouncedUpdate(data);
+                } catch (err) {
+                    console.error('Error parsing SSE data:', err);
+                    setError('Error receiving updates');
+                }
+            };
+
+            eventSource.onerror = (err) => {
+                console.error('SSE Error:', err);
+                setError('Connection error');
+                eventSource.close();
+            };
+
+        } catch (err) {
+            console.error('Error setting up SSE:', err);
+            setError('Connection error');
+        }
+
+        return () => {
+            if (eventSource) {
+                eventSource.close();
+            }
+        };
+    }, [debouncedUpdate]);
+
+    const currentLeagueTeams = React.useMemo(() => {
+        if (!activeLeagues.length || currentLeague >= activeLeagues.length) return [];
+        
+        const league = activeLeagues[currentLeague];
+        if (!league) return [];
+        
+        const teams = league.id === 'all' 
+            ? leaderboardData 
+            : leaderboardData.filter(team => team && team.league_id === league.id);
+
+        return teams.sort((a, b) => (b.total_points || 0) - (a.total_points || 0));
+    }, [leaderboardData, currentLeague, activeLeagues]);
+
+    const formatScore = (score) => {
+        return parseFloat(score || 0).toFixed(1);
+    };
+
+    const getLeagueName = (leagueId) => {
+        const league = INITIAL_DATA.leagues.find(l => l.id === leagueId);
+        return league ? league.name : '';
+    };
+
+    const ScoreHeaders = () => (
+        <div className="header-row">
+            <div>#</div>
+            <div>Team</div>
+            <div style={{textAlign: 'center'}}>A</div>
+            <div style={{textAlign: 'center'}}>S</div>
+            <div style={{textAlign: 'center'}}>E</div>
+            <div style={{textAlign: 'center'}}>Total</div>
+        </div>
+    );
+
+    const TeamList = ({ teams, startIndex }) => (
+        <div className="column">
+            <ScoreHeaders />
+            {teams.slice(0, startIndex === 0 ? 8 : 12).map((team, index) => {
+                if (!team) return null;
+                const position = startIndex + index + 1;
+                
+                return (
+                    <div 
+                        key={team.id || index} 
+                        className={`team-row ${position <= 3 ? `medal-${position}` : ''}`}
+                    >
+                        <div className="position-badge">{position}</div>
+                        <div className="team-name">
+                            {team.name || 'Unknown Team'}
+                        </div>
+                        <div className="score">{formatScore(team.academic_points)}</div>
+                        <div className="score">{formatScore(team.sports_points)}</div>
+                        <div className="score">{formatScore(team.extra_points)}</div>
+                        <div className="total-points">{formatScore(team.total_points)}</div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+
+    // Split into left (1-10) and right (11-20) columns
+    const leftTeams = currentLeagueTeams.slice(0, 10);
+    const rightTeams = currentLeagueTeams.slice(10);
+
+    const currentLeagueName = activeLeagues[currentLeague]?.name || 'League';
+
+    if (error) {
+        return (
+            <div className="leaderboard-wrapper">
+                <div className="error-message">
+                    {error}. Retrying...
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="leaderboard-wrapper">
+            <div className={`leaderboard-slide ${!isTransitioning ? 'active' : ''}`}>
+                <div className="league-header">
+                    <div className="league-title">
+                        <span className="league-name">{currentLeagueName}</span>
+                    </div>
+                </div>
+
+                <div className="teams-grid">
+                    <TeamList teams={leftTeams} startIndex={0} />
+                    <TeamList teams={rightTeams} startIndex={8} />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+try {
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<LeaderboardApp />);
+} catch (error) {
+    console.error('Render error:', error);
+    document.getElementById('root').innerHTML = `
+        <div style="color: white; text-align: center; padding: 20px;">
+            Error loading application. Please refresh the page.
+        </div>
+    `;
+}
+</script>
+{% endraw %}
+{% endblock %} 

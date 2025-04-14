@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+
+{% block title %}Judge Scoring{% endblock %}
+
+{% block content %}
+<div id="judge-app"></div>
+
+<script>
+window.INITIAL_DATA = {
+    categories: {{ categories|tojson|safe }},
+    teams: {{ teams|tojson|safe }},
+    competitions: {{ competitions|tojson|safe }},
+    leagues: {{ leagues|tojson|safe }}
+};
+</script>
+
+{% raw %}
+<script type="text/babel">
+const TeamModal = ({ isOpen, onClose, onSubmit, leagues }) => {
+    const [name, setName] = React.useState('');
+    const [leagueId, setLeagueId] = React.useState('');
+    const [error, setError] = React.useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!name || !leagueId) {
+            setError('Please fill in all fields');
+            return;
+        }
+        onSubmit({ name, league_id: parseInt(leagueId) });
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="modal">
+            <div className="modal-content">
+                <button className="close-button" onClick={onClose}>×</button>
+                <div className="modal-header">
+                    <h2 className="modal-title">Add New Team</h2>
+                </div>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="team-name">Team Name</label>
+                        <input
+                            type="text"
+                            id="team-name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Enter team name"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="league">League</label>
+                        <select
+                            id="league"
+                            value={leagueId}
+                            onChange={(e) => setLeagueId(e.target.value)}
+                        >
+                            <option value="">Select a league</option>
+                            {leagues.map(league => (
+                                <option key={league.id} value={league.id}>
+                                    {league.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    {error && <div className="message message-error">{error}</div>}
+                    <button type="submit" className="btn-primary">Add Team</button>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+const JudgePortal = () => {
+    const [categories, setCategories] = React.useState(window.INITIAL_DATA.categories);
+    const [teams, setTeams] = React.useState(window.INITIAL_DATA.teams);
+    const [competitions, setCompetitions] = React.useState(window.INITIAL_DATA.competitions);
+    const [leagues, setLeagues] = React.useState(window.INITIAL_DATA.leagues);
+    const [selectedCategory, setSelectedCategory] = React.useState(null);
+    const [selectedTeam, setSelectedTeam] = React.useState(null);
+    const [selectedLeague, setSelectedLeague] = React.useState(null);
+    const [scores, setScores] = React.useState({});
+    const [message, setMessage] = React.useState(null);
+    const [isTeamModalOpen, setIsTeamModalOpen] = React.useState(false);
+
+    React.useEffect(() => {
+        if (!localStorage.getItem('judgeAuthenticated')) {
+            window.location.replace('/login');
+        }
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('judgeAuthenticated');
+        window.location.replace('/login');
+    };
+
+    const handleAddTeam = async (teamData) => {
+        try {
+            const response = await fetch('/api/teams', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(teamData)
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error);
+
+            setTeams(prev => [...prev, data]);
+            setIsTeamModalOpen(false);
+            setMessage({
+                type: 'success',
+                text: 'Team added successfully!'
+            });
+        } catch (error) {
+            setMessage({
+                type: 'error',
+                text: error.message
+            });
+        }
+    };
+
+    const handleSaveScores = async () => {
+        try {
+            const scoreData = Object.entries(scores).map(([key, value]) => {
+                const [teamId, competitionId] = key.split('_');
+                return {
+                    team_id: parseInt(teamId),
+                    competition_id: parseInt(competitionId),
+                    points: parseFloat(value)
+                };
+            });
+
+            const response = await fetch('/api/scores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(scoreData)
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error);
+            }
+
+            setMessage({
+                type: 'success',
+                text: 'Scores saved successfully!'
+            });
+        } catch (error) {
+            setMessage({
+                type: 'error',
+                text: error.message
+            });
+        }
+    };
+
+    const handleScoreChange = (teamId, competitionId, value) => {
+        setScores(prev => ({
+            ...prev,
+            [`${teamId}_${competitionId}`]: value
+        }));
+    };
+
+    return (
+        <div className="judge-portal">
+            <header>
+                <h1>Judge Portal</h1>
+                <button className="btn-secondary" onClick={handleLogout}>Logout</button>
+            </header>
+
+            {message && (
+                <div className={`message message-${message.type}`}>
+                    {message.text}
+                </div>
+            )}
+
+            <div className="controls">
+                <div className="form-group">
+                    <label htmlFor="category">Category</label>
+                    <select
+                        id="category"
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                    >
+                        <option value="">Select a category</option>
+                        {categories.map(category => (
+                            <option key={category} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="league">League</label>
+                    <select
+                        id="league"
+                        value={selectedLeague}
+                        onChange={(e) => setSelectedLeague(e.target.value)}
+                    >
+                        <option value="">Select a league</option>
+                        {leagues.map(league => (
+                            <option key={league.id} value={league.id}>
+                                {league.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="team">Team</label>
+                    <select
+                        id="team"
+                        value={selectedTeam}
+                        onChange={(e) => setSelectedTeam(e.target.value)}
+                    >
+                        <option value="">Select a team</option>
+                        {teams
+                            .filter(team => !selectedLeague || team.league_id === parseInt(selectedLeague))
+                            .map(team => (
+                                <option key={team.id} value={team.id}>
+                                    {team.name}
+                                </option>
+                            ))}
+                    </select>
+                </div>
+
+                <button 
+                    className="btn-primary"
+                    onClick={() => setIsTeamModalOpen(true)}
+                >
+                    Add New Team
+                </button>
+            </div>
+
+            {selectedCategory && selectedLeague && (
+                <div className="score-grid">
+                    {teams
+                        .filter(team => team.league_id === parseInt(selectedLeague))
+                        .map(team => (
+                            <div key={team.id} className="score-item">
+                                <div className="score-header">
+                                    <h3 className="score-title">{team.name}</h3>
+                                </div>
+                                {competitions
+                                    .filter(comp => comp.category === selectedCategory)
+                                    .map(comp => (
+                                        <div key={comp.id} className="form-group">
+                                            <label htmlFor={`score_${team.id}_${comp.id}`}>
+                                                {comp.name} (Max: {comp.max_points})
+                                            </label>
+                                            <input
+                                                type="number"
+                                                id={`score_${team.id}_${comp.id}`}
+                                                value={scores[`${team.id}_${comp.id}`] || ''}
+                                                onChange={(e) => handleScoreChange(team.id, comp.id, e.target.value)}
+                                                min="0"
+                                                max={comp.max_points}
+                                                step="0.1"
+                                            />
+                                        </div>
+                                    ))}
+                            </div>
+                        ))}
+                </div>
+            )}
+
+            {selectedCategory && selectedLeague && (
+                <button 
+                    className="btn-primary"
+                    onClick={handleSaveScores}
+                    disabled={Object.keys(scores).length === 0}
+                >
+                    Save Scores
+                </button>
+            )}
+
+            <TeamModal
+                isOpen={isTeamModalOpen}
+                onClose={() => setIsTeamModalOpen(false)}
+                onSubmit={handleAddTeam}
+                leagues={leagues}
+            />
+        </div>
+    );
+};
+
+ReactDOM.render(<JudgePortal />, document.getElementById('judge-app'));
+</script>
+{% endraw %}
+{% endblock %} 

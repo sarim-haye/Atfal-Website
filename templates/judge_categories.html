@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Select Category{% endblock %}
+
+{% block styles %}
+<style>
+:root {
+    --dark-blue: #0a1628;
+    --light-blue: #00d4ff;
+    --white: #ffffff;
+    --background: #060d1b;
+    --card-bg: #0f1b31;
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--background);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.admin-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-btn:hover {
+    background: var(--light-blue);
+    color: var(--dark-blue);
+    transform: translateY(-1px);
+}
+
+.categories-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.category-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--light-blue);
+    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1);
+}
+
+.category-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.category-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.category-description {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.footer {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.leaderboard-btn {
+    background: var(--light-blue);
+    color: var(--dark-blue);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.leaderboard-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.trophy-icon {
+    font-size: 20px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1 class="title">Select Category</h1>
+    <a href="{{ url_for('manage_leagues') }}" class="admin-btn">Manage Leagues & Teams</a>
+</div>
+
+<div class="categories-container">
+    <a href="{{ url_for('judge_scoring', category='academic') }}" class="category-card">
+        <div class="category-icon">📚</div>
+        <h2 class="category-title">Academic</h2>
+        <p class="category-description">Score academic activities</p>
+    </a>
+
+    <a href="{{ url_for('judge_scoring', category='sports') }}" class="category-card">
+        <div class="category-icon">⚽</div>
+        <h2 class="category-title">Sports</h2>
+        <p class="category-description">Score sports activities</p>
+    </a>
+
+    <a href="{{ url_for('judge_scoring', category='extracurricular') }}" class="category-card">
+        <div class="category-icon">🎨</div>
+        <h2 class="category-title">Extracurricular</h2>
+        <p class="category-description">Score extracurricular activities</p>
+    </a>
+</div>
+
+<div class="footer">
+    <a href="{{ url_for('leaderboard') }}" class="leaderboard-btn">
+        <span class="trophy-icon">🏆</span>
+        View Live Leaderboard
+    </a>
+</div>
+{% endblock %} 

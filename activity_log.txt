@@ -1,0 +1,70 @@
+[2025-04-13 13:56:14] User: Sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 14:11:00] User: Sarim | Action: LOGIN_FAILED | Details: Invalid PIN attempt
+[2025-04-13 14:11:04] User: Sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 14:39:37] User: Sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 14:41:44] User: Sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 14:44:45] User: Sarim | Action: LOGOUT | Details: Logged out
+[2025-04-13 14:44:48] User: Sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 14:54:07] Judge: Sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 14:56:47] Judge: sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 14:57:10] Judge: sarim | Action: ADD_SCORES | Details: Added scores for team ID: 1
+[2025-04-13 14:57:22] Judge: sarim | Action: LOGOUT | Details: Logged out
+[2025-04-13 14:57:24] Judge: Sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 15:04:30] Judge: Sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 15:04:39] Judge: Sarim | Action: ADD_SCORES | Details: Added scores for team ID: 1
+[2025-04-13 15:09:42] Judge: sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 15:17:16] Judge: sarim | Action: LOGOUT | Details: Logged out
+[2025-04-13 15:17:19] Judge: sarim | Action: LOGIN_FAILED | Details: Invalid PIN attempt
+[2025-04-13 15:17:22] Judge: sarim | Action: LOGIN | Details: Successfully logged in
+[2025-04-13 15:21:37] Judge: Sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 15:21:52] Judge: Sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:21:58] Judge: Sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:22:01] Judge: Sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:26:21] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 15:26:30] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:26:31] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:26:32] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:26:32] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:26:46] Judge: sarim | Action: LOGOUT | Details: User logged out
+[2025-04-13 15:26:48] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 15:28:34] Judge: sarim | Action: LOGIN_FAILED | Details: Invalid PIN attempt
+[2025-04-13 15:28:37] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 15:29:38] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 15:29:40] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:29:41] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:29:42] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:29:46] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:30:52] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 15:30:57] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:30:58] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:30:58] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:30:59] Judge: sarim | Action: ERROR | Details: Error loading scoring page: Could not build url for endpoint 'judge_portal'. Did you mean 'judge_scoring' instead?
+[2025-04-13 15:34:03] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 15:36:05] Judge: sarim | Action: LOGOUT | Details: User logged out
+[2025-04-13 15:36:08] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 15:41:16] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 15:47:53] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 16:00:36] Judge: sarim | Action: SAVE_SCORES | Details: Saved 12 scores
+[2025-04-13 16:00:38] Judge: sarim | Action: SAVE_SCORES | Details: Saved 12 scores
+[2025-04-13 16:00:58] Judge: sarim | Action: SAVE_SCORES | Details: Saved 2 scores
+[2025-04-13 16:13:56] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 18:09:07] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 18:09:38] Judge: sarim | Action: SAVE_SCORES | Details: Saved 12 scores
+[2025-04-13 18:14:51] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 18:21:55] Judge: sarim | Action: ERROR | Details: Error loading manage teams page: Could not build url for endpoint 'add_team'. Did you mean 'admin_add_team' instead?
+[2025-04-13 18:22:12] Judge: sarim | Action: SAVE_SCORES | Details: Saved 12 scores
+[2025-04-13 18:22:21] Judge: sarim | Action: ERROR | Details: Error loading manage teams page: Could not build url for endpoint 'add_team'. Did you mean 'admin_add_team' instead?
+[2025-04-13 18:25:48] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 18:25:56] Judge: sarim | Action: ERROR | Details: Error loading manage teams page: Could not build url for endpoint 'add_team'. Did you mean 'admin_add_team' instead?
+[2025-04-13 18:28:52] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 18:29:01] Judge: sarim | Action: ERROR | Details: Error loading manage teams page: Could not build url for endpoint 'add_team'. Did you mean 'admin_add_team' instead?
+[2025-04-13 18:31:00] Judge: sarim | Action: ERROR | Details: Error loading admin leaderboard: no such column: t.total_points
+[2025-04-13 18:31:00] Judge: sarim | Action: ERROR | Details: Error loading manage teams page: Could not build url for endpoint 'add_team'. Did you mean 'admin_add_team' instead?
+[2025-04-13 18:33:43] Judge: sarim | Action: ERROR | Details: Error loading manage teams page: Could not build url for endpoint 'add_team'. Did you mean 'admin_add_team' instead?
+[2025-04-13 18:38:16] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-13 18:39:39] Judge: sarim | Action: SAVE_SCORES | Details: Saved 4 scores
+[2025-04-13 18:40:41] Judge: sarim | Action: ERROR | Details: Error loading admin leaderboard: no such column: t.total_points
+[2025-04-14 21:38:38] Judge: sarim | Action: LOGIN | Details: Successful login
+[2025-04-14 21:39:30] Judge: sarim | Action: SAVE_SCORES | Details: Saved 2 scores
+[2025-04-14 21:39:36] Judge: sarim | Action: SAVE_SCORES | Details: Saved 2 scores
+[2025-04-14 21:39:41] Judge: sarim | Action: SAVE_SCORES | Details: Saved 2 scores

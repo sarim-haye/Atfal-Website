@@ -1,0 +1,136 @@
+/* Variables */
+:root {
+    --primary-color: #2c3e50;
+    --academics-color: #3498db;
+    --sports-color: #2ecc71;
+    --extracurricular-color: #9b59b6;
+    --text-light: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+/* Global Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+header h1 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+.logout-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.logout-btn:hover {
+    background-color: #34495e;
+    transform: translateY(-2px);
+}
+
+/* Categories Grid */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.category-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+}
+
+.category-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.category-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.category-card h2 {
+    margin: 1rem 0;
+    font-size: 1.5rem;
+}
+
+.category-card p {
+    color: #666;
+    margin: 0;
+}
+
+/* Category-specific styles */
+.academics {
+    border-bottom: 4px solid var(--academics-color);
+}
+
+.academics:hover {
+    background: linear-gradient(to bottom right, #fff, #e1f5fe);
+}
+
+.sports {
+    border-bottom: 4px solid var(--sports-color);
+}
+
+.sports:hover {
+    background: linear-gradient(to bottom right, #fff, #e8f5e9);
+}
+
+.extracurricular {
+    border-bottom: 4px solid var(--extracurricular-color);
+}
+
+.extracurricular:hover {
+    background: linear-gradient(to bottom right, #fff, #f3e5f5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-card {
+        padding: 1.5rem;
+    }
+} 
